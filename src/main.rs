@@ -1,4 +1,7 @@
-use bevy::{prelude::*, render::render_graph::Command};
+// Bevy Queries almost always set off this lint.
+#![allow(clippy::type_complexity)]
+
+use bevy::prelude::*;
 use stage::setup_stage;
 
 pub mod ant;

@@ -6,7 +6,7 @@ use bevy::{
 use rand::{thread_rng, Rng};
 
 pub use crate::ant::Team;
-use crate::ant::{Ant, Carrying, Health, PheromoneTimer, Soldier, State, Worker};
+use crate::ant::{Ant, Carrying, Health, PheromoneTimer, State, Worker};
 pub struct Anthill;
 pub struct HasFood(pub usize);
 pub struct NeedsSoldier(bool);
@@ -24,9 +24,9 @@ impl Anthill {
 pub fn make_ants(
 	mut commands: Commands,
 	mut materials: ResMut<Assets<ColorMaterial>>,
-	mut hill: Query<(Entity, &mut HasFood, &Team, &Transform), With<Anthill>>,
+	mut hill: Query<(&mut HasFood, &Team, &Transform), With<Anthill>>,
 ) {
-	for (entity, mut food, team, transform) in hill.iter_mut() {
+	for (mut food, team, transform) in hill.iter_mut() {
 		if food.0 == 0 {
 			continue;
 		}
@@ -60,10 +60,10 @@ pub fn make_ants(
 
 pub fn take_food(
 	mut commands: Commands,
-	mut hill: Query<(Entity, &mut HasFood, &Team, &Transform), With<Anthill>>,
+	mut hill: Query<(&mut HasFood, &Team, &Transform), With<Anthill>>,
 	mut ant: Query<(Entity, &Team, &mut Carrying, &Transform, &mut State), With<Worker>>,
 ) {
-	for (hill, mut food, team, transform) in hill.iter_mut() {
+	for (mut food, team, transform) in hill.iter_mut() {
 		for (ant, ant_team, carrying, ant_transform, mut state) in ant.iter_mut() {
 			if team == ant_team {
 				let distance = transform.translation.distance(ant_transform.translation);

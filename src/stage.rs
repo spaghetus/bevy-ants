@@ -1,13 +1,9 @@
-use std::fs::File;
-
-use bevy::{prelude::*, ui::widget::Image};
+use bevy::prelude::*;
 use image::{DynamicImage, GenericImageView};
-use png::Transformations;
-use rayon::prelude::*;
 
 use crate::{
 	anthill::{Anthill, HasFood, Team},
-	food::{self, Food},
+	food::Food,
 };
 
 pub struct Stage {
@@ -42,7 +38,7 @@ pub fn setup_stage(
 	});
 	let hives: Vec<(Anthill, Team, Transform)> = (0..width)
 		.flat_map(|x| {
-			let x = x.clone();
+			let x = x;
 			let image = image.clone();
 			(0..height)
 				.filter(|y| {
@@ -70,14 +66,14 @@ pub fn setup_stage(
 			})
 			.insert(hive.0)
 			.insert(hive.1)
-			.insert(HasFood(10));
+			.insert(HasFood(500));
 	}
 	let (food_image, food_width, food_height) = crate::png::load("./assets/food.png");
 	assert_eq!(width, food_width);
 	assert_eq!(height, food_height);
 	let foods: Vec<(Food, Transform)> = (0..width)
 		.flat_map(|x| {
-			let x = x.clone();
+			let x = x;
 			let food_image = food_image.clone();
 			(0..height)
 				.filter(|y| {

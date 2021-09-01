@@ -17,7 +17,7 @@ pub fn pheromone_decay(
 ) {
 	for (pheromone, mut strength) in pheromone.iter_mut() {
 		strength.0 -= 1;
-		if strength.0 <= 0 {
+		if strength.0 == 0 {
 			commands.entity(pheromone).despawn();
 		}
 	}

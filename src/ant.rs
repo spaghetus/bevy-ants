@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, ops::Add};
+use std::f32::consts::PI;
 
 use bevy::{
 	core::{Time, Timer},
@@ -8,7 +8,6 @@ use bevy::{
 		With,
 	},
 	sprite::{ColorMaterial, Sprite},
-	transform::TransformSystem,
 };
 use image::GenericImageView;
 use rand::{thread_rng, Rng};
@@ -88,7 +87,7 @@ pub fn ant_emit_pheromone(
 	mut materials: ResMut<Assets<ColorMaterial>>,
 	mut ant: Query<(Entity, &Transform, &Team, &mut PheromoneTimer, &State), With<Ant>>,
 ) {
-	for (ant_ent, transform, team, mut timer, state) in ant.iter_mut() {
+	for (_, transform, team, mut timer, state) in ant.iter_mut() {
 		if timer.0.tick(time.delta()).just_finished() {
 			let scent = match state {
 				State::FoundFood => Scent::ToFood,
@@ -116,7 +115,6 @@ pub fn ant_emit_pheromone(
 }
 
 pub fn ant_seek_pheromone(
-	mut commands: Commands,
 	time: Res<Time>,
 	// mut ant: Query<(&mut Transform, &Team, &State), With<Ant>>,
 	// pheromones: Query<(&Transform, &Strength, &Team, &Scent), With<Pheromone>>,
@@ -129,7 +127,7 @@ pub fn ant_seek_pheromone(
 	let pheromones: Vec<(Transform, Strength, Team, Scent)> = set
 		.q1()
 		.iter()
-		.map(|v| (v.0.clone(), v.1.clone(), v.2.clone(), v.3.clone()))
+		.map(|v| (*v.0, v.1.clone(), v.2.clone(), v.3.clone()))
 		.collect();
 	// For each ant...
 	for (mut transform, team, state) in set.q0_mut().iter_mut() {
@@ -145,13 +143,14 @@ pub fn ant_seek_pheromone(
 		// Create a list of influences
 		let mut influences: Vec<f32> = vec![];
 		for (ph_transform, strength, ph_team, scent) in pheromones.iter() {
-			if ph_team == team && sought == *scent {
-				if ph_transform.translation.distance(transform.translation) < 50.0 {
-					let ph_pos = ph_transform.translation - transform.translation;
-					let angle = forward.angle_between(ph_pos);
-					if angle.abs() < PI / 4.0 {
-						influences.push(angle * (strength.0 as f32 / 16.0) * -1.0);
-					}
+			if ph_team == team
+				&& sought == *scent
+				&& ph_transform.translation.distance(transform.translation) < 50.0
+			{
+				let ph_pos = ph_transform.translation - transform.translation;
+				let angle = forward.angle_between(ph_pos);
+				if angle.abs() < PI / 4.0 {
+					influences.push(angle * (strength.0 as f32 / 16.0) * -1.0);
 				}
 			}
 		}

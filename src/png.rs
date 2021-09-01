@@ -1,6 +1,4 @@
 use image::{DynamicImage, GenericImageView};
-use png::ColorType::*;
-use std::fs::File;
 
 pub fn load(path: &str) -> (DynamicImage, u32, u32) {
 	// let decoder = png::Decoder::new(File::open(path).unwrap());
